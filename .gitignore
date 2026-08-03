@@ -1,0 +1,5 @@
+.DS_Store
+
+# 原始照片/视频（体积大，网页只引用 media/web/ 里的压缩版）
+media/*
+!media/web/
