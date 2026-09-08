@@ -1221,9 +1221,10 @@ h2[id] { scroll-margin-top: 1.5rem; }
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: 1rem;
+  gap: 0.75rem;
   font-size: 0.85rem;
   opacity: 0.75;
 }
@@ -1233,6 +1234,7 @@ h2[id] { scroll-margin-top: 1.5rem; }
   letter-spacing: 0.05em;
 }
 #visitor-map { text-align: left; display: none; }
+#site-credits { margin: 0; text-align: left; }
 
 /* Last-updated stamp: pinned to the top-left corner when the margin has room,
    otherwise it simply sits at the top of the page. */
@@ -1872,9 +1874,6 @@ h2[id] { scroll-margin-top: 1.5rem; }
         </p>
       <br>
       <br>
-      <p>
-          <i class="fa-regular fa-copyright"></i> Credits to <a href="https://vdoerig.com/">Vincent Dörig</a> for this website's template.
-      </p>
 
       <div id="site-footer">
         <div id="visitor-map">
@@ -1884,6 +1883,9 @@ h2[id] { scroll-margin-top: 1.5rem; }
                this comment. The block stays hidden until a widget renders. -->
           <script type="text/javascript" id="mmvst_globe" src="//mapmyvisitors.com/globe.js?d=RwS0I3nHAlKjWF0jDSUmoqjU0zCX4dK3aInJYTCr-Mw"></script>
         </div>
+        <p id="site-credits">
+          <i class="fa-regular fa-copyright"></i> Credits to <a href="https://vdoerig.com/">Vincent Dörig</a> for this website's template.
+        </p>
       </div>
     </article>
   </main>
