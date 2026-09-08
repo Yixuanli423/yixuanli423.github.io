@@ -1121,9 +1121,118 @@ mjx-c.mjx-c35::before {
   padding: 0.666em 0.5em 0.022em 0;
   content: "5";
 }
-</style></head>
+</style>
+<style id="side-toc-style">
+/* ---- Fixed section menu on the left ---- */
+#side-toc {
+  position: fixed;
+  top: 50%;
+  left: 1.75rem;
+  transform: translateY(-50%);
+  width: 10.5rem;
+  z-index: 50;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: left;
+  hyphens: none;
+}
+#side-toc .side-toc-title {
+  margin: 0 0 0.55rem 0.7rem;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  opacity: 0.55;
+}
+#side-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.15);
+}
+#side-toc li { margin: 0; }
+#side-toc a {
+  display: block;
+  padding: 0.28rem 0 0.28rem 0.7rem;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  color: var(--body-color);
+  opacity: 0.6;
+  text-decoration: none;
+  transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+#side-toc a:hover { opacity: 1; }
+#side-toc a.active {
+  opacity: 1;
+  font-weight: 700;
+  color: var(--link-visited);
+  border-left-color: var(--link-visited);
+}
+/* Give anchored headings a little breathing room below the top edge */
+h2[id] { scroll-margin-top: 1.5rem; }
+
+/* Toggle button, only used when the window is too narrow for the rail */
+#side-toc-toggle {
+  display: none;
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 51;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  background: var(--body-bg-color);
+  color: var(--body-color);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 1250px) {
+  #side-toc-toggle { display: block; }
+  #side-toc { display: none; }
+  body.side-toc-open #side-toc {
+    display: block;
+    top: auto;
+    bottom: 4.25rem;
+    left: 1rem;
+    transform: none;
+    width: 12rem;
+    padding: 0.85rem 1rem;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: var(--body-bg-color);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media print {
+  #side-toc, #side-toc-toggle { display: none; }
+}
+</style>
+</head>
 
 <body id="top" class="text-justify" data-new-gr-c-s-check-loaded="8.933.0" data-gr-ext-installed="">
+<button id="side-toc-toggle" type="button" aria-label="Section menu" aria-expanded="false" aria-controls="side-toc">&#9776;</button>
+<nav id="side-toc" aria-label="Section navigation">
+  <p class="side-toc-title">Contents</p>
+  <ul>
+    <li><a href="#top">Top</a></li>
+    <li><a href="#employment">Employment</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#activities">Activities and Talks</a></li>
+    <li><a href="#teaching">Teaching</a></li>
+    <li><a href="#esteem">Esteem</a></li>
+    <li><a href="#reviewership">Reviewership</a></li>
+    <li><a href="#misc">Misc</a></li>
+  </ul>
+</nav>
+
     <header style="display:flex; justify-content:center; align-items:center; text-align:center; margin-bottom:-1rem;">
       <!-- 左边头像 -->
       <figure style="margin:0 1rem 0 0; flex-shrink: 0;">
@@ -1756,6 +1865,55 @@ mjx-c.mjx-c35::before {
         document.getElementById("highlightcontent").style.display = "none";
         document.getElementById("fulllistcontent").style.display = "block";
       }
+    </script>
+
+
+    <script>
+      // Fixed left section menu: highlight the section currently in view,
+      // and act as a collapsible panel on narrow windows.
+      (function () {
+        var nav = document.getElementById('side-toc');
+        var toggle = document.getElementById('side-toc-toggle');
+        if (!nav) return;
+        var links = Array.prototype.slice.call(nav.querySelectorAll('a'));
+        var targets = links.map(function (a) {
+          return { link: a, el: document.getElementById(a.getAttribute('href').slice(1)) };
+        }).filter(function (t) { return t.el; });
+
+        function update() {
+          var current = targets[0];
+          for (var i = 0; i < targets.length; i++) {
+            if (targets[i].el.getBoundingClientRect().top <= 120) current = targets[i];
+          }
+          var atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 4;
+          if (atBottom) current = targets[targets.length - 1];
+          links.forEach(function (a) { a.classList.remove('active'); });
+          if (current) current.link.classList.add('active');
+        }
+
+        var ticking = false;
+        function onScroll() {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function () { update(); ticking = false; });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        update();
+
+        if (toggle) {
+          toggle.addEventListener('click', function () {
+            var open = document.body.classList.toggle('side-toc-open');
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          });
+          nav.addEventListener('click', function (e) {
+            if (e.target.tagName === 'A') {
+              document.body.classList.remove('side-toc-open');
+              toggle.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+      })();
     </script>
 
     <script type="application/ld+json">
