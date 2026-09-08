@@ -1213,6 +1213,48 @@ h2[id] { scroll-margin-top: 1.5rem; }
 @media print {
   #side-toc, #side-toc-toggle { display: none; }
 }
+
+/* ---- Footer: visitor map and last-updated stamp ---- */
+#site-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+#site-footer .footer-label {
+  margin: 0 0 0.4rem;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+#visitor-map { text-align: left; display: none; }
+
+/* Last-updated stamp: pinned to the top-left corner when the margin has room,
+   otherwise it simply sits at the top of the page. */
+#last-updated-line {
+  margin: 0 0 0.5rem;
+  text-align: left;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  hyphens: none;
+}
+@media (min-width: 1251px) {
+  #last-updated-line {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.75rem;
+    margin: 0;
+    z-index: 50;
+  }
+}
+@media print {
+  #last-updated-line { position: static; }
+}
 </style>
 </head>
 
@@ -1232,6 +1274,7 @@ h2[id] { scroll-margin-top: 1.5rem; }
     <li><a href="#misc">Misc</a></li>
   </ul>
 </nav>
+<p id="last-updated-line">Last updated: <span id="last-updated">8 September 2026</span></p>
 
     <header style="display:flex; justify-content:center; align-items:center; text-align:center; margin-bottom:-1rem;">
       <!-- 左边头像 -->
@@ -1832,6 +1875,16 @@ h2[id] { scroll-margin-top: 1.5rem; }
       <p>
           <i class="fa-regular fa-copyright"></i> Credits to <a href="https://vdoerig.com/">Vincent Dörig</a> for this website's template.
       </p>
+
+      <div id="site-footer">
+        <div id="visitor-map">
+          <p class="footer-label">Where visitors come from</p>
+          <!-- Visitor map widget goes here: generate one at mapmyvisitors.com
+               (the ClustrMaps successor) and paste its <script> tag right below
+               this comment. The block stays hidden until a widget renders. -->
+          <script type="text/javascript" id="mmvst_globe" src="//mapmyvisitors.com/globe.js?d=RwS0I3nHAlKjWF0jDSUmoqjU0zCX4dK3aInJYTCr-Mw"></script>
+        </div>
+      </div>
     </article>
   </main>
 
@@ -1913,6 +1966,39 @@ h2[id] { scroll-margin-top: 1.5rem; }
             }
           });
         }
+      })();
+    </script>
+
+    <script>
+      // The visitor map stays hidden until its third-party widget actually
+      // renders something, so the footer never shows an empty label.
+      (function () {
+        var box = document.getElementById('visitor-map');
+        if (!box) return;
+        var tries = 0;
+        (function check() {
+          if (box.querySelector('canvas, img, iframe, embed, svg, object')) {
+            box.style.display = 'block';
+            return;
+          }
+          if (++tries < 12) setTimeout(check, 500);
+        })();
+      })();
+
+      // Stamp the footer with the date of the latest commit to this site.
+      (function () {
+        var el = document.getElementById('last-updated');
+        if (!el || !window.fetch) return;
+        fetch('https://api.github.com/repos/Yixuanli423/yixuanli423.github.io/commits?per_page=1')
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+          .then(function (commits) {
+            var iso = commits && commits[0] && commits[0].commit.committer.date;
+            if (!iso) return;
+            el.textContent = new Date(iso).toLocaleDateString('en-GB', {
+              day: 'numeric', month: 'long', year: 'numeric'
+            });
+          })
+          .catch(function () { /* keep the hard-coded fallback date */ });
       })();
     </script>
 
